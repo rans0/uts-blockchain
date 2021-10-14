@@ -2,7 +2,7 @@ export FABRIC_CFG_PATH=${PWD}
 
 function printHelp() {
   echo "Usage: "
-  echo "  sample-network.sh <mode>"
+  echo "  akang-network.sh <mode>"
   echo "    <mode> - one of 'up' or 'down'"
   echo "      - 'up' - bring up the network with docker-compose up"
   echo "      - 'down' - clear the network with docker-compose down"

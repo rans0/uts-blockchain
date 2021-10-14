@@ -1,0 +1,327 @@
+version: '2'
+
+volumes:
+  orderer1.bakso.com:
+  orderer2.bakso.com:
+  orderer3.bakso.com:
+  orderer4.bakso.com:
+  orderer5.bakso.com:
+  peer1.akang1.bakso.com:
+  peer2.akang1.bakso.com:
+  peer1.akang2.bakso.com:
+  peer2.akang2.bakso.com:
+
+networks:
+  byfn:
+
+services:
+  orderer1.bakso.com:
+    extends:
+      file: base.yaml
+      service: orderer-base
+    container_name: orderer1.bakso.com
+    networks:
+    - byfn
+    volumes:
+        - ./channel-artifacts/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+        - ./crypto-config/ordererOrganizations/bakso.com/orderers/orderer1.bakso.com/msp:/var/hyperledger/orderer/msp
+        - ./crypto-config/ordererOrganizations/bakso.com/orderers/orderer1.bakso.com/tls/:/var/hyperledger/orderer/tls
+        - orderer1.bakso.com:/var/hyperledger/production/orderer
+    ports:
+    - 7050:7050
+
+  orderer2.bakso.com:
+    extends:
+      file: base.yaml
+      service: orderer-base
+    container_name: orderer2.bakso.com
+    networks:
+    - byfn
+    volumes:
+        - ./channel-artifacts/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+        - ./crypto-config/ordererOrganizations/bakso.com/orderers/orderer2.bakso.com/msp:/var/hyperledger/orderer/msp
+        - ./crypto-config/ordererOrganizations/bakso.com/orderers/orderer2.bakso.com/tls/:/var/hyperledger/orderer/tls
+        - orderer2.bakso.com:/var/hyperledger/production/orderer
+    ports:
+    - 8050:7050
+
+  orderer3.bakso.com:
+    extends:
+      file: base.yaml
+      service: orderer-base
+    container_name: orderer3.bakso.com
+    networks:
+    - byfn
+    volumes:
+        - ./channel-artifacts/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+        - ./crypto-config/ordererOrganizations/bakso.com/orderers/orderer3.bakso.com/msp:/var/hyperledger/orderer/msp
+        - ./crypto-config/ordererOrganizations/bakso.com/orderers/orderer3.bakso.com/tls/:/var/hyperledger/orderer/tls
+        - orderer3.bakso.com:/var/hyperledger/production/orderer
+    ports:
+    - 9050:7050
+
+  orderer4.bakso.com:
+    extends:
+      file: base.yaml
+      service: orderer-base
+    container_name: orderer4.bakso.com
+    networks:
+    - byfn
+    volumes:
+        - ./channel-artifacts/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+        - ./crypto-config/ordererOrganizations/bakso.com/orderers/orderer4.bakso.com/msp:/var/hyperledger/orderer/msp
+        - ./crypto-config/ordererOrganizations/bakso.com/orderers/orderer4.bakso.com/tls/:/var/hyperledger/orderer/tls
+        - orderer4.bakso.com:/var/hyperledger/production/orderer
+    ports:
+    - 10050:7050
+
+  orderer5.bakso.com:
+    extends:
+      file: base.yaml
+      service: orderer-base
+    container_name: orderer5.bakso.com
+    networks:
+    - byfn
+    volumes:
+        - ./channel-artifacts/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+        - ./crypto-config/ordererOrganizations/bakso.com/orderers/orderer5.bakso.com/msp:/var/hyperledger/orderer/msp
+        - ./crypto-config/ordererOrganizations/bakso.com/orderers/orderer5.bakso.com/tls/:/var/hyperledger/orderer/tls
+        - orderer5.bakso.com:/var/hyperledger/production/orderer
+    ports:
+    - 11050:7050
+
+  couchdb1:
+    container_name: couchdb1
+    image: hyperledger/fabric-couchdb
+    environment:
+      - COUCHDB_USER=
+      - COUCHDB_PASSWORD=
+    ports:
+      - "5984:5984"
+    networks:
+      - byfn
+  
+  couchdb2:
+    container_name: couchdb2
+    image: hyperledger/fabric-couchdb
+    environment:
+      - COUCHDB_USER=
+      - COUCHDB_PASSWORD=
+    ports:
+      - "6984:5984"
+    networks:
+      - byfn
+  
+  couchdb3:
+    container_name: couchdb3
+    image: hyperledger/fabric-couchdb
+    environment:
+      - COUCHDB_USER=
+      - COUCHDB_PASSWORD=
+    ports:
+      - "7984:5984"
+    networks:
+      - byfn
+  
+  couchdb4:
+    container_name: couchdb4
+    image: hyperledger/fabric-couchdb
+    environment:
+      - COUCHDB_USER=
+      - COUCHDB_PASSWORD=
+    ports:
+      - "8984:5984"
+    networks:
+      - byfn
+
+  peer1.akang1.bakso.com:
+    container_name: peer1.akang1.bakso.com
+    extends:
+      file: base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer1.akang1.bakso.com
+      - CORE_PEER_ADDRESS=peer1.akang1.bakso.com:7051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+      - CORE_PEER_CHAINCODEADDRESS=peer1.akang1.bakso.com:7052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer2.akang1.bakso.com:8051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.akang1.bakso.com:7051
+      - CORE_PEER_LOCALMSPID=Akang1MSP
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb1:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./crypto-config/peerOrganizations/org1.bakso.com/peers/peer1.akang1.bakso.com/msp:/etc/hyperledger/fabric/msp
+        - ./crypto-config/peerOrganizations/org1.bakso.com/peers/peer1.akang1.bakso.com/tls:/etc/hyperledger/fabric/tls
+        - peer1.akang1.bakso.com:/var/hyperledger/production
+    ports:
+      - 7051:7051
+    networks:
+      - byfn
+    depends_on:
+      - couchdb1
+
+  peer2.akang1.bakso.com:
+    container_name: peer2.akang1.bakso.com
+    extends:
+      file: base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer2.akang1.bakso.com
+      - CORE_PEER_ADDRESS=peer2.akang1.bakso.com:8051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:8051
+      - CORE_PEER_CHAINCODEADDRESS=peer2.akang1.bakso.com:8052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:8052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.akang1.bakso.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer2.akang1.bakso.com:8051
+      - CORE_PEER_LOCALMSPID=Akang1MSP
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb2:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./crypto-config/peerOrganizations/akang1.bakso.com/peers/peer2.akang1.bakso.com/msp:/etc/hyperledger/fabric/msp
+        - ./crypto-config/peerOrganizations/akang1.bakso.com/peers/peer2.akang1.bakso.com/tls:/etc/hyperledger/fabric/tls
+        - peer2.akang1.bakso.com:/var/hyperledger/production
+    ports:
+      - 8051:8051
+    networks:
+      - byfn
+    depends_on:
+      - couchdb2
+
+  peer1.akang2.bakso.com:
+    container_name: peer1.akang2.bakso.com
+    extends:
+      file: base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer1.akang2.bakso.com
+      - CORE_PEER_ADDRESS=peer1.akang2.bakso.com:9051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:9051
+      - CORE_PEER_CHAINCODEADDRESS=peer1.org2.example.com:9052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:9052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer2.org2.example.com:10051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.akang2.bakso.com:9051
+      - CORE_PEER_LOCALMSPID=Akang2MSP
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb3:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./crypto-config/peerOrganizations/akang2.bakso.com/peers/peer1.akang2.bakso.com/msp:/etc/hyperledger/fabric/msp
+        - ./crypto-config/peerOrganizations/akang2.bakso.com/peers/peer1.akang2.bakso.com/tls:/etc/hyperledger/fabric/tls
+        - peer1.akang2.bakso.com:/var/hyperledger/production
+    ports:
+      - 9051:9051
+    networks:
+      - byfn
+    depends_on:
+      - couchdb3
+
+  peer2.akang2.bakso.com:
+    container_name: peer2.akang2.bakso.com
+    extends:
+      file: base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer2.akang2.bakso.com
+      - CORE_PEER_ADDRESS=peer2.akang2.bakso.com:10051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:10051
+      - CORE_PEER_CHAINCODEADDRESS=peer2.akang2.bakso.com:10052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:10052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.akang2.bakso.com:9051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer2.akang2.bakso.com:10051
+      - CORE_PEER_LOCALMSPID=Akang2MSP
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb4:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./crypto-config/peerOrganizations/akang2.bakso.com/peers/peer2.akang2.bakso.com/msp:/etc/hyperledger/fabric/msp
+        - ./crypto-config/peerOrganizations/akang2.bakso.com/peers/peer2.akang2.bakso.com/tls:/etc/hyperledger/fabric/tls
+        - peer2.akang2.bakso.com:/var/hyperledger/production
+    ports:
+      - 10051:10051
+    networks:
+      - byfn
+    depends_on:
+      - couchdb4
+  
+  ca1:
+    extends:
+      file: base.yaml
+      service: ca-base
+    environment:
+      - FABRIC_CA_SERVER_CA_NAME=ca-org1
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.org1.example.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/96ce31974277301f7fb424527b9a3052fc9cbdd4ee3c4330510750da55ec9869_sk
+      - FABRIC_CA_SERVER_PORT=7054
+    ports:
+      - "7054:7054"
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.org1.example.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/96ce31974277301f7fb424527b9a3052fc9cbdd4ee3c4330510750da55ec9869_sk -b admin:adminpw -d'
+    volumes:
+      - ./crypto-config/peerOrganizations/akang1.bakso.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca_peerAkang1
+    
+  ca2:
+    extends:
+      file: base.yaml
+      service: ca-base
+    environment:
+      - FABRIC_CA_SERVER_CA_NAME=ca-org2
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.org2.example.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/43647a203ff6356bec08580d3adbfb7fca00a9c4fdc7a5f8a78e14d0b2da49d0_sk
+      - FABRIC_CA_SERVER_PORT=9054
+    ports:
+      - "9054:9054"
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.org2.example.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/43647a203ff6356bec08580d3adbfb7fca00a9c4fdc7a5f8a78e14d0b2da49d0_sk -b admin:adminpw -d'
+    volumes:
+      - ./crypto-config/peerOrganizations/akang2.bakso.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca_peerAkang2
+
+  cli:
+    container_name: cli
+    image: hyperledger/fabric-tools:$IMAGE_TAG
+    tty: true
+    stdin_open: true
+    environment:
+      - SYS_CHANNEL=$SYS_CHANNEL
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      # - FABRIC_LOGGING_SPEC=DEBUG
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_PEER_ID=cli
+      - CORE_PEER_ADDRESS=peer1.org1.example.com:7051
+      - CORE_PEER_LOCALMSPID=Akang1MSP
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/tls/ca.crt
+      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: /bin/bash
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./../chaincode/:/opt/gopath/src/github.com/chaincode
+        - ./crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
+        - ./scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/
+        - ./channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts
+    depends_on:
+      - orderer1.bakso.com
+      - orderer2.bakso.com
+      - orderer3.bakso.com
+      - orderer4.bakso.com
+      - orderer5.bakso.com
+      - peer1.akang1.bakso.com
+      - peer2.akang1.bakso.com
+      - peer1.akang2.bakso.com
+      - peer2.akang2.bakso.com
+    networks:
+      - byfn

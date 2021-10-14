@@ -1,0 +1,25 @@
+OrdererOrgs:
+  - Name: Akang
+    Domain: bakso.com
+    EnabledNodeOUs: true
+    Template:
+      Start: 1
+      Count: 5
+
+PeerOrgs:
+  - Name: Akang1
+    Domain: akang1.bakso.com
+    EnabledNodeOUs: true
+    Template: 
+      Start: 1
+      Count: 2
+    Users:
+      Count: 1
+  - Name: Akang2
+    Domain: akang2.bakso.com
+    EnabledNodeOUs: true
+    Template: 
+      Start: 1
+      Count: 2
+    Users:
+      Count: 1

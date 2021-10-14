@@ -1,0 +1,178 @@
+Organizations:
+
+  - &OrdererOrg
+    Name: AkangOrg
+    ID: AkangMSP
+    MSPDir: crypto-config/ordererOrganizations/bakso.com/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('AkangMSP.member')"
+      Writers:
+        Type: Signature
+        Rule: "OR('AkangMSP.member')"
+      Admins:
+        Type: Signature
+        Rule: "OR('AkangMSP.admin')"
+  - &Akang1
+    Name: Akang1MSP
+    ID: Akang1MSP
+    MSPDir: crypto-config/peerOrganizations/akang1.bakso.com/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('Akang1MSP.admin', 'Akang1MSP.peer', 'Akang1MSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('Akang1MSP.admin', 'Akang1MSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('Akang1MSP.admin')"
+    AnchorPeers:
+      - Host: peer1.akang1.bakso.com
+        Port: 7051
+  - &Akang2
+    Name: Akang2MSP
+    ID: Akang2MSP
+    MSPDir: crypto-config/peerOrganizations/akang2.bakso.com/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('Akang2MSP.admin', 'Akang2MSP.peer', 'Org2MSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('Akang2MSP.admin', 'Akang2MSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('Akang2MSP.admin')"
+    AnchorPeers:
+      - Host: peer1.akang2.bakso.com
+        Port: 9051
+
+Capabilities:
+
+    Channel: &ChannelCapabilities
+      V1_4_3: true
+      V1_3: false
+      V1_1: false
+    Orderer: &OrdererCapabilities
+      V1_4_2: true
+      V1_1: false
+    Application: &ApplicationCapabilities
+      V1_4_2: true
+      V1_3: false
+      V1_2: false
+      V1_1: false
+
+Application: &ApplicationDefaults
+
+    Organizations:
+    Policies:
+      Readers:
+        Type: ImplicitMeta
+        Rule: "ANY Readers"
+      Writers:
+        Type: ImplicitMeta
+        Rule: "ANY Writers"
+      Admins:
+        Type: ImplicitMeta
+        Rule: "MAJORITY Admins"
+    Capabilities:
+      <<: *ApplicationCapabilities
+
+Orderer: &OrdererDefaults
+    
+    BatchTimeout: 2s
+    BatchSize:
+      MaxMessageCount: 10
+      AbsoluteMaxBytes: 99 MB
+      PreferredMaxBytes: 512 KB
+    Organizations:
+    Policies:
+      Readers:
+        Type: ImplicitMeta
+        Rule: "ANY Readers"
+      Writers:
+        Type: ImplicitMeta
+        Rule: "ANY Writers"
+      Admins:
+        Type: ImplicitMeta
+        Rule: "MAJORITY Admins"
+      BlockValidation:
+        Type: ImplicitMeta
+        Rule: "MAJORITY Writers"
+    
+Channel: &ChannelDefaults
+    
+    Policies:
+      Readers:
+        Type: ImplicitMeta
+        Rule: "ANY Readers"
+      Writers:
+        Type: ImplicitMeta
+        Rule: "ANY Writers"
+      Admins:
+        Type: ImplicitMeta
+        Rule: "MAJORITY Admins"
+    Capabilities:
+      <<: *ApplicationCapabilities
+
+Profiles:
+    TwoOrgsChannel:
+      Consortium: SampleConsortium
+      <<: *ChannelDefaults
+      Application:
+        <<: *ApplicationDefaults
+        Organizations:
+          - *Akang1
+          - *Akang2
+        Capabilities:
+          <<: *ApplicationCapabilities
+    Raft:
+      <<: *ChannelDefaults
+      Capabilities:
+        <<: *ChannelCapabilities
+      Orderer:
+        <<: *OrdererDefaults
+        OrdererType: etcdraft
+        EtcdRaft:
+          Consenters:
+            - Host: orderer1.bakso.com
+              Port: 7050
+              ClientTLSCert: crypto-config/ordererOrganizations/bakso.com/orderers/orderer1.bakso.com/tls/server.crt
+              ServerTLSCert: crypto-config/ordererOrganizations/bakso.com/orderers/orderer1.bakso.com/tls/server.crt
+            - Host: orderer2.bakso.com
+              Port: 7050
+              ClientTLSCert: crypto-config/ordererOrganizations/bakso.com/orderers/orderer2.bakso.com/tls/server.crt
+              ServerTLSCert: crypto-config/ordererOrganizations/bakso.com/orderers/orderer2.bakso.com/tls/server.crt
+            - Host: orderer3.bakso.com
+              Port: 7050
+              ClientTLSCert: crypto-config/ordererOrganizations/bakso.com/orderers/orderer3.bakso.com/tls/server.crt
+              ServerTLSCert: crypto-config/ordererOrganizations/bakso.com/orderers/orderer3.bakso.com/tls/server.crt
+            - Host: orderer4.bakso.com
+              Port: 7050
+              ClientTLSCert: crypto-config/ordererOrganizations/bakso.com/orderers/orderer4.bakso.com/tls/server.crt
+              ServerTLSCert: crypto-config/ordererOrganizations/bakso.com/orderers/orderer4.bakso.com/tls/server.crt
+            - Host: orderer5.bakso.com
+              Port: 7050
+              ClientTLSCert: crypto-config/ordererOrganizations/bakso.com/orderers/orderer5.bakso.com/tls/server.crt
+              ServerTLSCert: crypto-config/ordererOrganizations/bakso.com/orderers/orderer5.bakso.com/tls/server.crt
+        Addresses:
+          - orderer1.bakso.com:7050
+          - orderer2.bakso.com:7050
+          - orderer3.bakso.com:7050
+          - orderer4.bakso.com:7050
+          - orderer5.bakso.com:7050
+        Organizations:
+          - *OrdererOrg
+        Capabilities:
+          <<: *OrdererCapabilities
+      Application:
+        <<: *ApplicationDefaults
+        Organizations:
+          - <<: *OrdererOrg
+      Consortiums:
+        SampleConsortium:
+          Organizations:
+            - *Akang1
+            - *Akang2
